@@ -1,5 +1,5 @@
 import List from "./List";
-import React, {useState} from "react";
+import React, {useState, useMemo} from "react";
 
 const initialState = [
   {id:1, name:'Luis Diaz'},
@@ -7,7 +7,8 @@ const initialState = [
 ]
 function App() {
   const [users, setUsers] = useState(initialState);
-  const [text, setText] = useState('New');
+  const [text, setText] = useState('');
+  const [ search, setSearch] = useState('')
   React.useEffect(()=>{
     console.log('App render')
   })
@@ -16,12 +17,23 @@ function App() {
       const newUser = { id: Date.now(), name:text}
       setUsers([...users, newUser])
   }
+  const handleSearch =()=>{
+    setSearch(text) 
+  }
 
+  const filteredUser = useMemo(()=>
+    users.filter(user=>{
+        return user.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())
+    })
+  , [users, search])
+      
+  
   return (
     <>
     <input type='text' value={text} onChange={(e)=>setText(e.target.value)}/>
-    <List users={users}></List>
+    <List users={filteredUser}></List>
     <button onClick={handleAdd}>add</button>
+    <button onClick={handleSearch}>Search</button>
     </>
   );
 }
